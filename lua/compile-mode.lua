@@ -1,3 +1,5 @@
+local M = {}
+
 local function create_buffer()
 	local buf = vim.api.nvim_create_buf(true, true)
 	vim.api.nvim_buf_set_name(buf, "*compilation*")
@@ -21,7 +23,7 @@ local function is_buffer_open(buffer_id)
 	return nil
 end
 
-local function compile()
+M.compile = function()
 	local start_date = vim.fn.strftime("%c")
 	local append_data = function(_, data)
 		if data then
@@ -41,7 +43,7 @@ local function compile()
 	-- wait for job to finish.
 end
 
-local function main(opts)
+M.compile_setup = function(opts)
 	if next(opts.fargs) == nil then
 		print("compile-mode: arguments not found.")
 		return
@@ -61,13 +63,13 @@ local function main(opts)
 		buf = create_buffer()
 	end
 
-	compile()
+	M.compile()
 	vim.api.nvim_win_set_buf(win, buf)
 end
 
-local function setup()
-	vim.api.nvim_create_user_command("Compile", main, { nargs = "*" })
-	vim.api.nvim_create_user_command("Recompile", compile, {})
+M.setup = function()
+	vim.api.nvim_create_user_command("Compile", M.compile_setup, { nargs = "*" })
+	vim.api.nvim_create_user_command("Recompile", M.compile, {})
 	vim.api.nvim_create_user_command("ToggleCompileSplit", function()
 		vertical_split = not vertical_split
 	end, {})
@@ -77,4 +79,4 @@ local function setup()
 	vim.api.nvim_buf_set_keymap(buf, "n", "<leader>g", ":Recompile<CR>", { noremap = true, silent = true })
 end
 
-return { setup = setup }
+return M
