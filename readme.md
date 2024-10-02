@@ -10,8 +10,11 @@ Contains 3 functions:
 `:Compile <args>`
 
 Calls a temporary buffer that executes the arguments its given.
+
 The buffer can be closed quickly with `q`.
-The arguments are temporarily stored during the current session.
+
+The passed arguments are temporarily stored during the current session,
+and removed everytime a new set of arguments are given to the command.
 
 `:Recompile`
 
