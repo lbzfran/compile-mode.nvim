@@ -3,6 +3,8 @@
 
 My own implementation of Emac's Compilation Mode in Neovim.
 
+## Functionality
+
 Contains 3 functions:
 
 `:Compile <args>`
@@ -18,3 +20,16 @@ Re-executes the last arguments passed to the Compile command.
 
 By default, the window of the temporary buffer spawns vertically.
 Running this will toggle it between horizontal and vertical window.
+
+## Installation
+
+Simply add using your favorite package manager:
+
+```lua
+return {
+  "lbzfran/compile-mode.nvim",
+  config function()
+    require("compile-mode").setup()
+  end
+}
+```
