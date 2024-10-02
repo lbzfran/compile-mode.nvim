@@ -26,6 +26,7 @@ Running this will toggle it between horizontal and vertical window.
 Simply add using your favorite package manager:
 
 ```lua
+-- lazy.nvim
 return {
   "lbzfran/compile-mode.nvim",
   config function()
