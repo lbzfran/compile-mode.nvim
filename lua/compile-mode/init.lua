@@ -1,15 +1,16 @@
 local M = {}
 
+-- keep a cache of last passed arguments.
+local last_args = ""
+local vertical_split = true
+local next = next
+
 local function create_buffer()
 	local buf = vim.api.nvim_create_buf(true, true)
 	vim.api.nvim_buf_set_name(buf, "*compilation*")
 	return buf
 end
 
--- keep a cache of last passed arguments to main.
-local last_args = ""
-
-local vertical_split = true
 local buf = create_buffer()
 
 local function is_buffer_open(buffer_id)
@@ -24,12 +25,17 @@ local function is_buffer_open(buffer_id)
 	return nil
 end
 
-local next = next
-
 M.compile = function()
 	if last_args == "" then
-		print("compile-mode: no commands found.")
-		return
+		-- prompt user if no argument has been saved yet.
+		last_args = vim.fn.input({
+			prompt = "Compile: ",
+			--completion = "file",
+		})
+
+		if last_args == "" then
+			return
+		end
 	end
 
 	local win = is_buffer_open(buf)
@@ -54,7 +60,7 @@ M.compile = function()
 	vim.api.nvim_buf_set_lines(buf, 0, -1, false, { "Compilation started at " .. start_date })
 	vim.api.nvim_buf_set_lines(buf, -1, -1, false, { "command: " .. last_args })
 	vim.fn.jobstart(last_args, {
-		stdout_buffered = true,
+		--stdout_buffered = true,
 		on_stdout = append_data,
 		on_stderr = append_data,
 		on_exit = function()
@@ -86,7 +92,7 @@ M.setup = function()
 	-- give the buffer a local mapping to quit the buffer with `q`.
 	vim.api.nvim_buf_set_keymap(buf, "n", "q", ":q<CR>", { noremap = true, silent = true })
 	--vim.api.nvim_buf_set_keymap(buf, "n", "<leader>g", ":Recompile<CR>", { noremap = true, silent = true })
-	vim.keymap.set("n", "<leader>c", ":Recompile<CR>", { noremap = true, silent = true })
+	--vim.keymap.set("n", "<leader>c", ":Recompile<CR>", { noremap = true, silent = true })
 end
 
 return M
