@@ -89,7 +89,7 @@ M.setup = function()
 		vertical_split = not vertical_split
 	end, {})
 
-	-- give the buffer a local mapping to quit the buffer with `q`.
+	-- give the buffer a local mapping to quit with `q`.
 	vim.api.nvim_buf_set_keymap(buf, "n", "q", ":q<CR>", { noremap = true, silent = true })
 	--vim.api.nvim_buf_set_keymap(buf, "n", "<leader>g", ":Recompile<CR>", { noremap = true, silent = true })
 	--vim.keymap.set("n", "<leader>c", ":Recompile<CR>", { noremap = true, silent = true })
