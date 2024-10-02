@@ -10,11 +10,14 @@ Contains 3 functions:
 `:Compile <args>`
 
 Calls a temporary buffer that executes the arguments its given.
+The buffer can be closed quickly with `q`.
 The arguments are temporarily stored during the current session.
 
 `:Recompile`
 
 Re-executes the last arguments passed to the Compile command.
+
+This command is mapped to `<leader>g` by default (currently hardcoded).
 
 `:ToggleCompileSplit`
 
