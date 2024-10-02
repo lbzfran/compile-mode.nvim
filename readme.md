@@ -14,7 +14,7 @@ Calls a temporary buffer that executes the arguments its given.
 The buffer can be closed with `q` when it's in focus.
 
 The passed arguments are temporarily stored during the current session,
-and removed everytime a new set of arguments are given to the command.
+and replaced everytime a new set of arguments are given to the command.
 
 `:Recompile`
 
