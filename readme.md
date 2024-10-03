@@ -36,7 +36,12 @@ Simply add using your favorite package manager:
 return {
   "lbzfran/compile-mode.nvim",
   config function()
-    require("compile-mode").setup()
-  end
+    local compile = require("compile-mode")
+    compile.setup()
+
+    -- keymap
+    vim.keymap.set("n", "<leader>c", function() compile.compile() end,
+    { noremap = true, silent = true, desc = "Compile for current working dir" })
+  end,
 }
 ```

@@ -28,14 +28,8 @@ end
 M.compile = function()
 	if last_args == "" then
 		-- prompt user if no argument has been saved yet.
-		last_args = vim.fn.input({
-			prompt = "Compile: ",
-			--completion = "file",
-		})
-
-		if last_args == "" then
-			return
-		end
+		print("compile-mode: compile command not set.")
+		return
 	end
 
 	local win = is_buffer_open(buf)
@@ -51,33 +45,51 @@ M.compile = function()
 		buf = create_buffer()
 	end
 	local start_date = vim.fn.strftime("%c")
-	local append_data = function(_, data)
-		if data then
-			vim.api.nvim_buf_set_lines(buf, -1, -1, false, data)
+	local append_data = function(_, data, event)
+		local end_date = vim.fn.strftime("%c")
+		if event == "stdout" then
+			if data then
+				vim.api.nvim_buf_set_lines(buf, -1, -1, false, data)
+			end
+		end
+		if event == "stderr" then
+			if data then
+				vim.api.nvim_buf_set_lines(buf, -1, -1, false, data)
+			end
+		end
+		if event == "exit" then
+			vim.api.nvim_buf_set_lines(buf, -1, -1, false, { "Compilation finished at " .. end_date })
 		end
 	end
 
-	vim.api.nvim_buf_set_lines(buf, 0, -1, false, { "Compilation started at " .. start_date })
+	vim.api.nvim_buf_set_lines(buf, 0, -1, false, { "-*- compile-mode; directory: '" .. vim.fn.getcwd() .. "' -*-" })
+	vim.api.nvim_buf_set_lines(buf, -1, -1, false, { "Compilation started at " .. start_date })
 	vim.api.nvim_buf_set_lines(buf, -1, -1, false, { "command: " .. last_args })
 	vim.fn.jobstart(last_args, {
-		--stdout_buffered = true,
+		stdout_buffered = true,
+		stderr_buffered = true,
 		on_stdout = append_data,
 		on_stderr = append_data,
-		on_exit = function()
-			local end_date = vim.fn.strftime("%c")
-			vim.api.nvim_buf_set_lines(buf, -1, -1, false, { "Compilation finished at " .. end_date })
-		end,
+		on_exit = append_data,
 	})
 
 	vim.api.nvim_win_set_buf(win, buf)
 end
 
 M.compile_setup = function(opts)
+	-- sets the arguments to be executed.
 	if next(opts.fargs) == nil then
-		print("compile-mode: received no arguments.")
-		return
+		last_args = vim.fn.input({
+			prompt = "Compile command: ",
+			default = last_args,
+		})
+
+		if last_args == "" then
+			return
+		end
+	else
+		last_args = opts.args
 	end
-	last_args = opts.args
 
 	M.compile()
 end
