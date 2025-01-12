@@ -31,6 +31,7 @@ local function savetolv()
     if lv then
         lv["compile_args"] = last_args
         print("I did something!")
+        require("lasts").save()
     end
 end
 
