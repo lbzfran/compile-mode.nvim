@@ -3,7 +3,6 @@ local M = {}
 -- keep a cache of last passed arguments.
 local lv = require("lasts").var or nil
 
-print((lv["compile_args"] or "") .. "printed")
 local last_args = lv["compile_args"] or ""
 local vertical_split = true
 local next = next
