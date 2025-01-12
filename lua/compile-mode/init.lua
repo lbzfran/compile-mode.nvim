@@ -5,13 +5,15 @@ local last_args = ""
 local vertical_split = true
 local next = next
 
+local lv = require("lasts").var or nil
+
 local function create_buffer()
     local buf = vim.api.nvim_create_buf(true, true)
     vim.api.nvim_buf_set_name(buf, "*compilation*")
     return buf
 end
 
-local buf = create_buffer()
+local buf = nil
 
 local function is_buffer_open(buffer_id)
     local windows = vim.api.nvim_tabpage_list_wins(0)
@@ -23,6 +25,12 @@ local function is_buffer_open(buffer_id)
     end
 
     return nil
+end
+
+local function savetolv()
+    if lv then
+        lv["compile_args"] = last_args
+    end
 end
 
 M.compile = function()
@@ -41,9 +49,12 @@ M.compile = function()
         end
         win = vim.api.nvim_get_current_win()
     end
+
     if buf == nil then
         buf = create_buffer()
+        vim.api.nvim_buf_set_keymap(buf, "n", "q", ":quit<CR>", { noremap = true, silent = true })
     end
+
     local start_date = vim.fn.strftime("%c")
     local append_data = function(_, data, event)
         local end_date = vim.fn.strftime("%c")
@@ -87,6 +98,7 @@ M.compile_setup = function(opts)
         if last_args == "" then
             return
         end
+        savetolv()
     else
         last_args = opts.args
     end
@@ -100,9 +112,7 @@ M.setup = function()
     vim.api.nvim_create_user_command("ToggleCompileSplit", function()
         vertical_split = not vertical_split
     end, {})
-
     -- give the buffer a local mapping to quit with `q`.
-    vim.api.nvim_buf_set_keymap(buf, "n", "q", ":q<CR>", { noremap = true, silent = true })
     --vim.api.nvim_buf_set_keymap(buf, "n", "<leader>g", ":Recompile<CR>", { noremap = true, silent = true })
     --vim.keymap.set("n", "<leader>c", ":Recompile<CR>", { noremap = true, silent = true })
 end
