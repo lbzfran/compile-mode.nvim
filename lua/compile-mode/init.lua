@@ -1,11 +1,12 @@
 local M = {}
 
 -- keep a cache of last passed arguments.
-local last_args = ""
+local lv = require("lasts").var or nil
+
+print(lv["compile_args"] .. "printed")
+local last_args = lv["compile_args"] or ""
 local vertical_split = true
 local next = next
-
-local lv = require("lasts").var or nil
 
 local function create_buffer()
     local buf = vim.api.nvim_create_buf(true, true)
@@ -30,7 +31,6 @@ end
 local function savetolv()
     if lv then
         lv["compile_args"] = last_args
-        print("I did something!")
         require("lasts").save()
     end
 end
@@ -100,11 +100,11 @@ M.compile_setup = function(opts)
         if last_args == "" then
             return
         end
-        savetolv()
     else
         last_args = opts.args
     end
 
+    savetolv()
     M.compile()
 end
 
