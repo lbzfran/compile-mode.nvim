@@ -1,11 +1,14 @@
 local M = {}
 
--- keep a cache of last passed arguments.
+-- if lasts.nvim exists, optionally caches arguments in 'lasting' storage.
 local lv = require("lasts").var or nil
 
+-- keep a temporary cache of last passed arguments.
 local last_args = lv["compile_args"] or ""
-local vertical_split = true
 local next = next
+
+local vertical_split = true
+local save_args = true
 
 local function create_buffer()
     local buf = vim.api.nvim_create_buf(true, true)
@@ -103,14 +106,25 @@ M.compile_setup = function(opts)
         last_args = opts.args
     end
 
-    savetolv()
+    if save_args then
+        savetolv()
+    end
     M.compile()
 end
 
-M.setup = function()
+M.setup = function(opts)
+    if opts then
+        if opts.save_args then
+            save_args = opts.save_args
+        end
+        if opts.vertical_split then
+            vertical_split = opts.vertical_split
+        end
+    end
+
     vim.api.nvim_create_user_command("Compile", M.compile_setup, { nargs = "*" })
     vim.api.nvim_create_user_command("Recompile", M.compile, {})
-    vim.api.nvim_create_user_command("ToggleCompileSplit", function()
+    vim.api.nvim_create_user_command("CompileSplitToggle", function()
         vertical_split = not vertical_split
     end, {})
     -- give the buffer a local mapping to quit with `q`.

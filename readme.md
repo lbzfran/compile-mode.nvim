@@ -37,7 +37,16 @@ return {
   "lbzfran/compile-mode.nvim",
   config function()
     local compile = require("compile-mode")
-    compile.setup()
+    compile.setup({
+        -- DEFAULT; no need to include these.
+        vertical_split = true,
+        -- if lasts.nvim is found, calling compile can optionally
+        -- save the last arguments used until it's replaced.
+        save_args = true,
+    })
+
+    -- default
+    compile.save_args = true
 
     -- keymap
     vim.keymap.set("n", "<leader>c", function() compile.compile() end,
